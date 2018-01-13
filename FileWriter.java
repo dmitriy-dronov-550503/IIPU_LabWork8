@@ -9,6 +9,15 @@ public class FileWriter {
 
     public FileWriter(String fileName){
         this.fileName = fileName;
+        open();
+    }
+
+    public void write(String message){
+        writer.println(message);
+        writer.flush();
+    }
+
+    private void open(){
         try {
             writer = new PrintWriter(fileName, "UTF-8");
         } catch (FileNotFoundException e) {
@@ -18,9 +27,9 @@ public class FileWriter {
         }
     }
 
-    public void write(String message){
-        writer.println(message);
-        writer.flush();
+    public void flush(){
+        writer.close();
+        open();
     }
 
 }
