@@ -1,13 +1,15 @@
+package logs;
+
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 
-public class FileWriter {
+public class FileLogWriter {
 
     private String fileName;
     private PrintWriter writer;
 
-    public FileWriter(String fileName){
+    public FileLogWriter(String fileName){
         this.fileName = fileName;
         open();
     }
@@ -30,6 +32,10 @@ public class FileWriter {
     public void flush(){
         writer.close();
         open();
+    }
+
+    public void close(){
+        writer.close();
     }
 
 }

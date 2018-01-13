@@ -1,3 +1,5 @@
+package logic;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -5,9 +7,9 @@ public class QueueBuffer<T> {
     private Queue<T> queue = new LinkedList<>();
     private int queueSize = 1;
 
-    QueueBuffer(){};
+    public QueueBuffer(){};
 
-    QueueBuffer(int queueSize){
+    public QueueBuffer(int queueSize){
         this.queueSize = queueSize;
     }
 

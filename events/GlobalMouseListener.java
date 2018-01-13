@@ -1,21 +1,21 @@
+package events;
+
+import logic.TimeManager;
+import logs.FileLogWriter;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.mouse.NativeMouseEvent;
 import org.jnativehook.mouse.NativeMouseInputListener;
 
-import java.util.concurrent.TimeUnit;
-
 public class GlobalMouseListener implements NativeMouseInputListener {
 
-    private FileWriter writer = new FileWriter("MouseEvents.txt");
+    private FileLogWriter writer = new FileLogWriter("MouseEvents.txt");
 
     public void nativeMouseClicked(NativeMouseEvent e) {
-        System.out.println("Mouse Clicked: " + e.getClickCount());
         writer.write(TimeManager.getTime()+"\tBtn: "+e.getButton()+" X: "+e.getX()+" Y: "+e.getY());
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
-        System.out.println("Mouse Pressed: " + e.getButton());
         writer.write(TimeManager.getTime()+"\tBtn: "+e.getButton()+" X: "+e.getX()+" Y: "+e.getY());
     }
 
